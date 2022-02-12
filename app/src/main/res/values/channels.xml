@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="channels_name">
+        <item>Doublenom</item>
+        <item>UselessCorp</item>
+        <item>Mizuki_Okami</item>
+        <item>BritanouilleTV</item>
+    </string-array>
+</resources>

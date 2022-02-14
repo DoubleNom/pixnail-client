@@ -1,5 +1,7 @@
 package ca.doublenom.pixnails
 
+import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +11,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.InputStream
 
 class Promo(val context: AppCompatActivity) {
     private val dataSet = ArrayList<PromoItem>(5)
 
-    data class PromoItem(var text: String, var img: Int)
+    data class PromoItem(var number: Int)
 
     class PromoAdapter(
+        private val context: Context,
         private val dataSet: ArrayList<PromoItem>
     ) : RecyclerView.Adapter<PromoAdapter.ViewHolder>() {
 
@@ -31,8 +35,12 @@ class Promo(val context: AppCompatActivity) {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.text.text = "${dataSet[position].text}/28"
-//            holder.img.setImageResource(R.mipmap.promo_sample)
+            var number = dataSet[position].number
+            val ims : InputStream = context.assets.open("pixnails/cards/promo/regular/cards_ressources_generations_promo_snails_normal_$number.png")
+            val d = Drawable.createFromStream(ims, null)
+            holder.text.text = "$number/28"
+            holder.img.setImageDrawable(d)
+            ims.close()
         }
 
         override fun getItemCount(): Int {
@@ -42,7 +50,7 @@ class Promo(val context: AppCompatActivity) {
 
     }
 
-    val adapter = PromoAdapter(dataSet)
+    val adapter = PromoAdapter(context, dataSet)
 
     val queue = HTTPClient.getInstance(context)
 
@@ -62,7 +70,7 @@ class Promo(val context: AppCompatActivity) {
                 dataSet.clear()
                 for(i in 0 until cards.length()){
                     val obj = cards.getJSONObject(i)
-                    dataSet.add(PromoItem("${obj.getInt("index")}", R.mipmap.promo_sample_foreground))
+                    dataSet.add(PromoItem(obj.getInt("index")))
                 }
                 adapter.notifyDataSetChanged()
 

@@ -64,7 +64,7 @@ class FullscreenActivity : AppCompatActivity() {
                     if (auth != null) {
                         httpClient.headers["authorization"] = auth
                         Handler(Looper.getMainLooper()).post {
-                            tbClientSwitch.isChecked = true
+//                            tbClientSwitch.isChecked = true
                         }
                     }
                 }

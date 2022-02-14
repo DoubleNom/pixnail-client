@@ -1,6 +1,7 @@
 package ca.doublenom.pixnails
 
 import android.graphics.Bitmap
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import android.widget.CompoundButton
 import android.widget.Spinner
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -24,6 +26,8 @@ class FullscreenActivity : AppCompatActivity() {
     private lateinit var client: ViewGroup
     private lateinit var httpClient: HTTPClient
     private lateinit var shells: Shells
+    private lateinit var promo: Promo
+    private lateinit var toolbar: ConstraintLayout
 
     private lateinit var tbClientSwitch: ToggleButton
 
@@ -32,6 +36,7 @@ class FullscreenActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         httpClient = HTTPClient.getInstance(applicationContext)
 
+        toolbar = findViewById(R.id.toolbar)
         sChannels = findViewById(R.id.spinner)
         webview = findViewById(R.id.webview)
         client = findViewById(R.id.include_client)
@@ -41,6 +46,7 @@ class FullscreenActivity : AppCompatActivity() {
                 webview.visibility = View.GONE
                 client.visibility = View.VISIBLE
                 shells.refresh()
+                promo.refresh()
             } else {
                 webview.visibility = View.VISIBLE
                 client.visibility = View.GONE
@@ -48,6 +54,7 @@ class FullscreenActivity : AppCompatActivity() {
         }
 
         shells = Shells(this)
+        promo = Promo(this)
 
         val swc = ServiceWorkerController.getInstance()
         swc.setServiceWorkerClient(object : ServiceWorkerClient() {
@@ -65,7 +72,7 @@ class FullscreenActivity : AppCompatActivity() {
             }
         })
 
-        webview.webViewClient = CustomClient(sChannels)
+        webview.webViewClient = CustomClient(toolbar)
         webview.settings.javaScriptEnabled = true
         webview.loadUrl("https://www.twitch.tv/login")
 
@@ -85,13 +92,13 @@ class FullscreenActivity : AppCompatActivity() {
 
     }
 
-    class CustomClient(val spinner: Spinner) : WebViewClient() {
+    class CustomClient(val toolbar: ConstraintLayout) : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             Log.d("WVC", "url: $url")
             if (url != null && (url == "https://www.twitch.tv" || url.contains("?"))) {
                 view?.loadUrl("https://www.twitch.tv/popout/doublenom/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
-                spinner.visibility = View.VISIBLE
+                toolbar.visibility = View.VISIBLE
             }
         }
     }

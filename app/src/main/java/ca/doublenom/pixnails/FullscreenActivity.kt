@@ -88,8 +88,11 @@ class FullscreenActivity : AppCompatActivity() {
                 // Nothing
             }
         }
+    }
 
-
+    override fun onPause() {
+        super.onPause()
+        finish()
     }
 
     class CustomClient(val toolbar: ConstraintLayout) : WebViewClient() {

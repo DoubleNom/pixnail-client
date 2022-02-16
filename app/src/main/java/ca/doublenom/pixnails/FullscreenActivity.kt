@@ -44,7 +44,7 @@ class FullscreenActivity : AppCompatActivity() {
             if (p1) {
                 webview.visibility = View.GONE
                 client.visibility = View.VISIBLE
-                shells.refresh()
+                shells.fetch()
                 promo.refresh()
             } else {
                 webview.visibility = View.VISIBLE
@@ -52,7 +52,7 @@ class FullscreenActivity : AppCompatActivity() {
             }
         }
 
-        shells = Shells(this)
+        shells = Shells(this, shellsCallback)
         promo = Promo(this)
         boosters = Boosters(this)
 
@@ -104,5 +104,9 @@ class FullscreenActivity : AppCompatActivity() {
                 toolbar.visibility = View.VISIBLE
             }
         }
+    }
+
+    private val shellsCallback = object: Shells.Callback {
+
     }
 }

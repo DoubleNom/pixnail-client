@@ -1,14 +1,18 @@
 package ca.doublenom.pixnails
 
+import android.os.Handler
+import android.os.Looper
 import android.text.format.DateUtils
 import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.text.SimpleDateFormat
 import java.util.*
 
-class Shells(context: AppCompatActivity) {
+class Shells(context: AppCompatActivity, callback: Callback) {
+    interface Callback {
+
+    }
+
     private class Data {
         var lastUpdate = 0L
         var silverShells = 0
@@ -16,17 +20,28 @@ class Shells(context: AppCompatActivity) {
 
         var ceiling = 0
         var seconds = 0
-        var quantity = 0
+        var quantity = 50
     }
+
+    private val timer = Timer("Shells")
     private val data = Data()
 
+    private var mainHandler = Handler(Looper.getMainLooper())
     private var queue = HTTPClient.getInstance(context)
 
     private var regularView = context.findViewById<TextView>(R.id.shells_view_amount)
     private var dropTimerView = context.findViewById<TextView>(R.id.shells_view_drop_timer)
     private var fullView = context.findViewById<TextView>(R.id.shells_view_full_reminder)
 
-    fun refresh() {
+    init {
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                refresh()
+            }
+        }, 250, 250)
+    }
+
+    fun fetch() {
         queue.addToRequestQueue(
             "/user",
             {
@@ -40,7 +55,7 @@ class Shells(context: AppCompatActivity) {
                 data.seconds = drop.getInt("seconds")
                 data.quantity = drop.getInt("quantity")
 
-                updateView()
+                refresh()
             },
             {
                 Log.d("Shells", "Error: $it")
@@ -48,14 +63,16 @@ class Shells(context: AppCompatActivity) {
         )
     }
 
-    private fun updateView() {
-        val now = System.currentTimeMillis()
-        val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)
-        val fullIn = (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
+    private fun refresh() {
+        mainHandler.post {
+            val now = System.currentTimeMillis()
+            val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)
+            val fullIn =
+                (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
 
-        regularView.text = "${data.shells}/${data.ceiling}"
-        dropTimerView.text = DateUtils.formatElapsedTime(nextDrop / 1000)
-        fullView.text = DateUtils.formatElapsedTime(fullIn / 1000)
+            regularView.text = "${data.shells}/${data.ceiling}"
+            dropTimerView.text = DateUtils.formatElapsedTime(nextDrop / 1000)
+            fullView.text = DateUtils.formatElapsedTime(fullIn / 1000)
+        }
     }
-
 }

@@ -23,6 +23,9 @@ class Shells(context: AppCompatActivity, private val callback: Callback) {
         var quantity = 50
     }
 
+    var fullIn: Long = 0
+        private set
+
     private val timer = Timer("Shells")
     private val data = Data()
 
@@ -66,16 +69,15 @@ class Shells(context: AppCompatActivity, private val callback: Callback) {
     }
 
     private fun refresh() {
-        mainHandler.post {
-            val now = System.currentTimeMillis()
-            val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)
-            val fullIn =
-                (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
+        val now = System.currentTimeMillis()
+        val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)
+        fullIn =
+            (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
 
-            if (nextDrop <= 0) {
-                fetch()
-                return@post
-            }
+        if (nextDrop <= 0) {
+            fetch()
+        }
+        mainHandler.post {
 
             regularView.text = "${data.shells}/${data.ceiling}"
             dropTimerView.text = DateUtils.formatElapsedTime(nextDrop / 1000)

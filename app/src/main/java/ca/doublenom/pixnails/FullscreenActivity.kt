@@ -56,6 +56,8 @@ class FullscreenActivity : AppCompatActivity() {
         promo = Promo(this)
         boosters = Boosters(this, boosterCallback)
 
+        OneTimeScheduleWorker.createNotificationChannel(this)
+
         val swc = ServiceWorkerController.getInstance()
         swc.setServiceWorkerClient(object : ServiceWorkerClient() {
             override fun shouldInterceptRequest(request: WebResourceRequest?): WebResourceResponse? {
@@ -106,13 +108,17 @@ class FullscreenActivity : AppCompatActivity() {
         }
     }
 
-    private val shellsCallback = object: Shells.Callback {
+    private val shellsCallback = object : Shells.Callback {
         override fun onShellsUpdated(shells: Int, silverShells: Int) {
             boosters.onShellsUpdated(shells, silverShells)
+            OneTimeScheduleWorker.scheduleOneTimeNotification(
+                this@FullscreenActivity,
+                this@FullscreenActivity.shells.fullIn
+            )
         }
     }
 
-    private val boosterCallback = object: Boosters.Callback {
+    private val boosterCallback = object : Boosters.Callback {
         override fun onPurchase() {
             shells.fetch()
         }

@@ -92,7 +92,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        finish()
+        if (webview.url!!.contains("popout")) finish()
     }
 
     class CustomClient(val toolbar: ConstraintLayout) : WebViewClient() {

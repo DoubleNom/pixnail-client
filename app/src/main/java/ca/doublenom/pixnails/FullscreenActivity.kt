@@ -1,7 +1,6 @@
 package ca.doublenom.pixnails
 
 import android.graphics.Bitmap
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.AdapterView
-import android.widget.CompoundButton
 import android.widget.Spinner
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +25,7 @@ class FullscreenActivity : AppCompatActivity() {
     private lateinit var httpClient: HTTPClient
     private lateinit var shells: Shells
     private lateinit var promo: Promo
+    private lateinit var boosters: Boosters
     private lateinit var toolbar: ConstraintLayout
 
     private lateinit var tbClientSwitch: ToggleButton
@@ -55,6 +54,7 @@ class FullscreenActivity : AppCompatActivity() {
 
         shells = Shells(this)
         promo = Promo(this)
+        boosters = Boosters(this)
 
         val swc = ServiceWorkerController.getInstance()
         swc.setServiceWorkerClient(object : ServiceWorkerClient() {

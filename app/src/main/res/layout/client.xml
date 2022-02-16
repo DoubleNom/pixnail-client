@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="264dp" />
+        app:layout_constraintGuide_begin="301dp" />
 
     <include
         android:id="@+id/include"
@@ -52,7 +52,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/booster_layout"
+        android:id="@+id/boosters_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="2dp"
@@ -70,7 +70,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/booster_layout_list"
+            android:id="@+id/boosters_layout_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,7 +79,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/boosters_layout_title"
             app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@layout/booster" />
+            tools:listitem="@layout/booster_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

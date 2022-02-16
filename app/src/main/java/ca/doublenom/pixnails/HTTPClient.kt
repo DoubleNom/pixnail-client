@@ -32,6 +32,7 @@ class HTTPClient constructor(context: Context) {
     }
 
     fun addToRequestQueue(endpoint: String, onSuccess: Response.Listener<JSONObject>, onError: Response.ErrorListener) {
+        if(headers.isEmpty()) return
         val authorization = headers["authorization"]!!
 
         val request = object: JsonObjectRequest(

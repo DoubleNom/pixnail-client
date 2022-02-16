@@ -54,7 +54,7 @@ class FullscreenActivity : AppCompatActivity() {
 
         shells = Shells(this, shellsCallback)
         promo = Promo(this)
-        boosters = Boosters(this)
+        boosters = Boosters(this, boosterCallback)
 
         val swc = ServiceWorkerController.getInstance()
         swc.setServiceWorkerClient(object : ServiceWorkerClient() {
@@ -107,6 +107,14 @@ class FullscreenActivity : AppCompatActivity() {
     }
 
     private val shellsCallback = object: Shells.Callback {
+        override fun onShellsUpdated(shells: Int, silverShells: Int) {
+            boosters.onShellsUpdated(shells, silverShells)
+        }
+    }
 
+    private val boosterCallback = object: Boosters.Callback {
+        override fun onPurchase() {
+            shells.fetch()
+        }
     }
 }

@@ -12,16 +12,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class Boosters(val context: AppCompatActivity) {
+class Boosters(context: AppCompatActivity, private val callback: Callback) {
     private val dataSet = ArrayList<BoosterItem>(3)
 
-    data class BoosterItem(var set: String, var rank: String)
+    data class BoosterItem(
+        var set: String,
+        var rank: String,
+        var priceShells: Int,
+        var priceSilverShells: Int
+    )
 
     class BoosterAdapter(
         private val context: Context,
-        private val dataSet: ArrayList<BoosterItem>
+        private val dataSet: ArrayList<BoosterItem>,
+        var shells: Int = 0,
+        var silverShells: Int = 0
     ) : RecyclerView.Adapter<BoosterAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val price: TextView = view.findViewById(R.id.booster_item_price)
             val title: TextView = view.findViewById(R.id.booster_item_title)
             val img: ImageView = view.findViewById(R.id.booster_item_image)
             val bX1: Button = view.findViewById(R.id.booster_item_x1)
@@ -37,12 +45,37 @@ class Boosters(val context: AppCompatActivity) {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = dataSet[position]
-            val imgPath = "pixnails/boosters/cards_ressources_generations_${item.set}_booster_${item.rank}.png"
+            holder.title.text = "${item.set} - ${item.rank}"
+
+            val imgPath =
+                "pixnails/boosters/cards_ressources_generations_${item.set}_booster_${item.rank}.png"
             val ims = context.assets.open(imgPath)
             val d = Drawable.createFromStream(ims, null)
-            holder.title.text = "${item.set} - ${item.rank}"
             holder.img.setImageDrawable(d)
             ims.close()
+
+            var text = ""
+            if (item.priceShells != 0) text += "S: ${item.priceShells}"
+            if (item.priceShells != 0 && item.priceSilverShells != 0) text += " & "
+            if (item.priceSilverShells != 0) text += "SS: ${item.priceShells}"
+            holder.price.text = text
+
+            holder.bX1.visibility = if(hasEnoughMoney(shells, silverShells, item.priceShells, item.priceSilverShells, 1)) View.VISIBLE else View.GONE
+            holder.bX10.visibility = if(hasEnoughMoney(shells, silverShells, item.priceShells, item.priceSilverShells, 10)) View.VISIBLE else View.GONE
+            holder.bMax.visibility = holder.bX1.visibility
+        }
+
+
+        private fun hasEnoughMoney(
+            shells: Int,
+            silverShells: Int,
+            priceShells: Int,
+            priceSilverShells: Int,
+            quantity: Int
+        ): Boolean {
+            if (shells - (priceShells * quantity) < 0) return false
+            if (silverShells - (priceSilverShells * quantity) < 0) return false
+            return true
         }
 
         override fun getItemCount(): Int {
@@ -59,10 +92,21 @@ class Boosters(val context: AppCompatActivity) {
     init {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        dataSet.add(BoosterItem("origin", "normal"))
-        dataSet.add(BoosterItem("origin", "premium"))
-        dataSet.add(BoosterItem("promo", "normal"))
+        dataSet.add(BoosterItem("origin", "normal", 100, 0))
+        dataSet.add(BoosterItem("origin", "premium", 1000, 0))
+        dataSet.add(BoosterItem("promo", "normal", 500, 0))
         adapter.notifyDataSetChanged()
+    }
+
+    fun onShellsUpdated(shells: Int, silverShells: Int) {
+        adapter.shells = shells
+        adapter.silverShells = silverShells
+
+        adapter.notifyDataSetChanged()
+    }
+
+    interface Callback {
+        fun onPurchase()
     }
 
 }

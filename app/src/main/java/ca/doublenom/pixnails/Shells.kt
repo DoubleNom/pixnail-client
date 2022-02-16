@@ -8,9 +8,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
-class Shells(context: AppCompatActivity, callback: Callback) {
+class Shells(context: AppCompatActivity, private val callback: Callback) {
     interface Callback {
-
+        fun onShellsUpdated(shells: Int, silverShells: Int)
     }
 
     private class Data {
@@ -56,6 +56,8 @@ class Shells(context: AppCompatActivity, callback: Callback) {
                 data.quantity = drop.getInt("quantity")
 
                 refresh()
+
+                mainHandler.post { callback.onShellsUpdated(data.shells, data.silverShells) }
             },
             {
                 Log.d("Shells", "Error: $it")
@@ -69,6 +71,11 @@ class Shells(context: AppCompatActivity, callback: Callback) {
             val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)
             val fullIn =
                 (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
+
+            if (nextDrop <= 0) {
+                fetch()
+                return@post
+            }
 
             regularView.text = "${data.shells}/${data.ceiling}"
             dropTimerView.text = DateUtils.formatElapsedTime(nextDrop / 1000)

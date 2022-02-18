@@ -1,9 +1,9 @@
 package ca.doublenom.pixnails
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.text.format.DateUtils
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
@@ -25,8 +25,7 @@ class Money(context: AppCompatActivity, private val callback: Callback) {
         var quantity = 50
     }
 
-    var fullIn: Long = 0
-        private set
+    private var fullIn: Long = 0
 
     private var timer: Timer? = null
     private val data = Data()
@@ -68,6 +67,7 @@ class Money(context: AppCompatActivity, private val callback: Callback) {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun refresh() {
         val now = System.currentTimeMillis()
         val nextDrop = data.seconds * 1000 - (now - data.lastUpdate)

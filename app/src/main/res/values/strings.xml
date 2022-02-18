@@ -2,4 +2,26 @@
 <resources>
     <string name="app_name">Pixnails</string>
     <string name="spinner_channel_selection">Channel selection</string>
+    <string name="cd_booster_image">booster image</string>
+    <string name="purchase_time_1">×1</string>
+    <string name="purchase_time_10">×10</string>
+    <string name="purchase_time_max">Max</string>
+    <string name="regular">Regular</string>
+    <string name="price">price</string>
+    <string name="placeholder_card_number">10/10</string>
+    <string name="cd_card_rarity">card rarity</string>
+    <string name="cd_card_set_icon">set icon</string>
+    <string name="cd_card_image">card image</string>
+    <string name="promo_cards">Promo Cards</string>
+    <string name="boosters">Boosters</string>
+    <string name="new_cards">New cards</string>
+    <string name="nothing_new">Nothing new :(</string>
+    <string name="draw">draw</string>
+    <string name="official">Official</string>
+    <string name="reworked">Reworked</string>
+    <string name="promo_card_image">promo card image</string>
+    <string name="shells">Shells</string>
+    <string name="placeholder_shells">1200/1200</string>
+    <string name="placeholder_shells_drop_timer">45:00</string>
+    <string name="placeholder_shell_full_timer">2:59:00</string>
 </resources>

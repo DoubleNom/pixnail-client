@@ -3,11 +3,8 @@ package ca.doublenom.pixnails
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -17,7 +14,7 @@ import kotlin.random.Random
 
 // Source : https://martian.ventures/mantra/insights/schedule-local-notifications-on-android/
 class OneTimeScheduleWorker(
-    val context: Context,
+    private val context: Context,
     workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
 
@@ -40,18 +37,16 @@ class OneTimeScheduleWorker(
         fun createNotificationChannel(context: Context) {
             // Create the NotificationChannel, but only on API 26+ because
             // the NotificationChannel class is new and not in the support library
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = CHANNEL_ID
-                val descriptionText = CHANNEL_DESC
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
-                }
-                // Register the channel with the system
-                val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(channel)
+            val name = CHANNEL_ID
+            val descriptionText = CHANNEL_DESC
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
             }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
 
 
@@ -68,8 +63,8 @@ class OneTimeScheduleWorker(
 
 
         const val CHANNEL_ID = "notication_money_cap"
-        const val CHANNEL_DESC = "Money cap alert"
-        const val WORK_TAG = "money_limit_reminder"
+        private const val CHANNEL_DESC = "Money cap alert"
+        private const val WORK_TAG = "money_limit_reminder"
 
     }
 

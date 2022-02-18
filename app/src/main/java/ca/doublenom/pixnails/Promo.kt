@@ -1,5 +1,6 @@
 package ca.doublenom.pixnails
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -24,7 +25,6 @@ class Promo(context: AppCompatActivity) {
     ) : RecyclerView.Adapter<PromoAdapter.ViewHolder>() {
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val text: TextView = view.findViewById(R.id.promo_item_number)
             val img: ImageView = view.findViewById(R.id.promo_item_picture)
         }
 
@@ -34,11 +34,11 @@ class Promo(context: AppCompatActivity) {
             return ViewHolder(view)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            var number = dataSet[position].number
+            val number = dataSet[position].number
             val ims : InputStream = context.assets.open("pixnails/cards/promo/regular/cards_ressources_generations_promo_snails_normal_$number.png")
             val d = Drawable.createFromStream(ims, null)
-            holder.text.text = "$number/28"
             holder.img.setImageDrawable(d)
             ims.close()
         }
@@ -48,17 +48,18 @@ class Promo(context: AppCompatActivity) {
         }
     }
 
-    val adapter = PromoAdapter(context, dataSet)
+    private val adapter = PromoAdapter(context, dataSet)
 
-    val queue = HTTPClient.getInstance(context)
+    private val queue = HTTPClient.getInstance(context)
 
-    val recyclerView = context.findViewById<RecyclerView>(R.id.promo_layout_list)
+    private val recyclerView = context.findViewById<RecyclerView>(R.id.promo_layout_list)
 
     init {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun refresh() {
         queue.addToRequestQueueObject(
             "/settings",

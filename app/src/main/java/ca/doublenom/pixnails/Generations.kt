@@ -1,7 +1,6 @@
 package ca.doublenom.pixnails
 
 import android.content.Context
-import android.telecom.Call
 import android.util.Log
 import org.json.JSONArray
 

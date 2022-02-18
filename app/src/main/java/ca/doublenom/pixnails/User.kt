@@ -3,7 +3,7 @@ package ca.doublenom.pixnails
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
-class User(context: AppCompatActivity, private val callback: User.Callback) {
+class User(context: AppCompatActivity, private val callback: Callback) {
 
     private val queue = HTTPClient.getInstance(context)
 

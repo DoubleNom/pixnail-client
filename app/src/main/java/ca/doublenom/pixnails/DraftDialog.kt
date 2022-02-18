@@ -1,5 +1,6 @@
 package ca.doublenom.pixnails
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
@@ -11,10 +12,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.InputStream
-import java.lang.IllegalStateException
 
 class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Card>) : DialogFragment() {
     class DraftAdapter(
@@ -35,6 +34,7 @@ class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Car
             return ViewHolder(view)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = dataSet[position]
             val imgPath = if (item.puddyness != Puddyness.Giga)
@@ -61,7 +61,7 @@ class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Car
             holder.rarity.setImageDrawable(d)
             ims.close()
 
-            holder.text.text = "${item.number}/28"
+            holder.text.text = "${item.number}"
         }
 
         override fun getItemCount(): Int {

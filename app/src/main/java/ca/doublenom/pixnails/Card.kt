@@ -2,24 +2,15 @@ package ca.doublenom.pixnails
 
 import org.json.JSONObject
 
-class Card {
+class Card(json: JSONObject, var puddyness: Puddyness) {
     var set: String = ""
     var number: Int = 0
     var rarity: Rarity = Rarity.D
-    var puddyness: Puddyness = Puddyness.None
 
-    constructor(set: String, number: Int, puddyness: Puddyness) {
-        this.set = set
-        this.number = number
-        this.puddyness = puddyness
-        rarity = Generations.getCardRarity(set, number)
-    }
-
-    constructor(json: JSONObject, puddyness: Puddyness) {
+    init {
         this.set = json.getString("generationId")
         this.number = json.getInt("index")
         rarity = Generations.getCardRarity(set, number)
-        this.puddyness = puddyness
     }
 
     override fun hashCode(): Int {

@@ -1,12 +1,13 @@
 package ca.doublenom.pixnails
 
 import android.content.Context
-import com.android.volley.*
-import com.android.volley.toolbox.*
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.Exception
-import java.lang.NullPointerException
 
 class HTTPClient constructor(context: Context) {
     private val url = "https://twitch-pixnails.web.app"

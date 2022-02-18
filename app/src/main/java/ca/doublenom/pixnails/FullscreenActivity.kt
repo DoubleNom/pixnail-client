@@ -1,5 +1,6 @@
 package ca.doublenom.pixnails
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
@@ -32,6 +33,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     private lateinit var tbClientSwitch: ToggleButton
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -89,7 +91,7 @@ class FullscreenActivity : AppCompatActivity() {
         sChannels.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val channel = resources.getStringArray(R.array.channels_name)[p2].lowercase()
-                Log.d("Channel", "$channel")
+                Log.d("Channel", channel)
                 tbClientSwitch.isChecked = false
                 webview.loadUrl("https://www.twitch.tv/popout/$channel/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
             }

@@ -1,5 +1,6 @@
 package ca.doublenom.pixnails
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -16,6 +17,7 @@ import org.json.JSONArray
 import java.lang.Integer.MAX_VALUE
 import java.lang.Integer.min
 
+@SuppressLint("NotifyDataSetChanged")
 class Boosters(
     context: AppCompatActivity, private val callback: Callback
 ) {
@@ -54,6 +56,7 @@ class Boosters(
             return ViewHolder(view)
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = dataSet[position]
             holder.title.text = "${item.set} - ${item.rank}"
@@ -141,19 +144,21 @@ class Boosters(
             queue.addToRequestQueueArray("/generations/$set/boosters/$rank?quantity=$quantity",
                 {
                     Log.d("Booster", it.toString())
-                    val array: JSONArray = it.getJSONArray(0)
                     val cards: HashSet<Card> = HashSet()
-                    for (i in 0 until array.length()) {
-                        val obj = array.getJSONObject(i)
-                        val q = obj.getJSONObject("quantities")
-                        val puddyness =
-                            when {
-                                q.getInt(Puddyness.Normal.toUselessCorpRetardness()) != 0 -> Puddyness.Normal
-                                q.getInt(Puddyness.Super.toUselessCorpRetardness()) != 0 -> Puddyness.Super
-                                q.getInt(Puddyness.Giga.toUselessCorpRetardness(false)) != 0 -> Puddyness.Giga
-                                else -> Puddyness.None
-                            }
-                        cards.add(Card(obj, puddyness))
+                    for(boosterIndex in 0 until it.length()) {
+                        val array: JSONArray = it.getJSONArray(boosterIndex)
+                        for (cardIndex in 0 until array.length()) {
+                            val obj = array.getJSONObject(cardIndex)
+                            val q = obj.getJSONObject("quantities")
+                            val puddyness =
+                                when {
+                                    q.getInt(Puddyness.Normal.toUselessCorpRetardness()) != 0 -> Puddyness.Normal
+                                    q.getInt(Puddyness.Super.toUselessCorpRetardness()) != 0 -> Puddyness.Super
+                                    q.getInt(Puddyness.Giga.toUselessCorpRetardness(false)) != 0 -> Puddyness.Giga
+                                    else -> Puddyness.None
+                                }
+                            cards.add(Card(obj, puddyness))
+                        }
                     }
                     callback.onDraw(cards.toTypedArray())
                 },
@@ -177,6 +182,7 @@ class Boosters(
         adapter.notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun onShellsUpdated(shells: Int, silverShells: Int) {
         adapter.shells = shells
         adapter.silverShells = silverShells

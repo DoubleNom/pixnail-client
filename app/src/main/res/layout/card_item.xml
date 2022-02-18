@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="100dp"
     android:layout_height="wrap_content">
 
@@ -13,7 +12,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/promo_sample_foreground" />
+        app:srcCompat="@mipmap/promo_sample_foreground"
+        android:contentDescription="@string/cd_card_image" />
 
     <ImageView
         android:id="@+id/card_item_set"
@@ -24,7 +24,8 @@
         app:layout_constraintEnd_toEndOf="@+id/card_item_image"
         app:layout_constraintStart_toEndOf="@+id/card_item_number"
         app:layout_constraintTop_toBottomOf="@+id/card_item_number"
-        app:srcCompat="@mipmap/cards_ressources_generations_origin_icon" />
+        app:srcCompat="@mipmap/cards_ressources_generations_origin_icon"
+        android:contentDescription="@string/cd_card_set_icon" />
 
     <ImageView
         android:id="@+id/card_item_rank"
@@ -35,7 +36,8 @@
         app:layout_constraintEnd_toStartOf="@+id/card_item_number"
         app:layout_constraintStart_toStartOf="@+id/card_item_image"
         app:layout_constraintTop_toBottomOf="@+id/card_item_number"
-        app:srcCompat="@mipmap/cards_ressources_template_rarity_a_normal" />
+        app:srcCompat="@mipmap/cards_ressources_template_rarity_a_normal"
+        android:contentDescription="@string/cd_card_rarity" />
 
     <TextView
         android:id="@+id/card_item_number"
@@ -43,7 +45,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:minWidth="50dp"
-        android:text="10/10"
+        android:text="@string/placeholder_card_number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/card_item_image" />

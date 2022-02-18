@@ -35,7 +35,7 @@
             android:id="@+id/promo_layout_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Promo Cards"
+            android:text="@string/promo_cards"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -65,7 +65,7 @@
             android:id="@+id/boosters_layout_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Boosters"
+            android:text="@string/boosters"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

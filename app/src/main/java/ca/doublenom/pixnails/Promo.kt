@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.InputStream
 
-class Promo(val context: AppCompatActivity) {
+class Promo(context: AppCompatActivity) {
     private val dataSet = ArrayList<PromoItem>(5)
 
     data class PromoItem(var number: Int)
@@ -46,8 +46,6 @@ class Promo(val context: AppCompatActivity) {
         override fun getItemCount(): Int {
             return dataSet.size
         }
-
-
     }
 
     val adapter = PromoAdapter(context, dataSet)
@@ -62,7 +60,7 @@ class Promo(val context: AppCompatActivity) {
     }
 
     fun refresh() {
-        queue.addToRequestQueue(
+        queue.addToRequestQueueObject(
             "/settings",
             {
                 val cards = it.getJSONArray("currentPromoDrop")

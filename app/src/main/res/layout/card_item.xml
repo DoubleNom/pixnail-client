@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/card_item_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/promo_sample_foreground" />
+
+    <ImageView
+        android:id="@+id/card_item_set"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/card_item_image"
+        app:layout_constraintStart_toEndOf="@+id/card_item_number"
+        app:layout_constraintTop_toBottomOf="@+id/card_item_number"
+        app:srcCompat="@mipmap/cards_ressources_generations_origin_icon" />
+
+    <ImageView
+        android:id="@+id/card_item_rank"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/card_item_number"
+        app:layout_constraintStart_toStartOf="@+id/card_item_image"
+        app:layout_constraintTop_toBottomOf="@+id/card_item_number"
+        app:srcCompat="@mipmap/cards_ressources_template_rarity_a_normal" />
+
+    <TextView
+        android:id="@+id/card_item_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minWidth="50dp"
+        android:text="10/10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_item_image" />
+</androidx.constraintlayout.widget.ConstraintLayout>

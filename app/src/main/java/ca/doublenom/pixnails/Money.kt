@@ -6,11 +6,13 @@ import android.text.format.DateUtils
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONObject
 import java.util.*
 
-class Shells(context: AppCompatActivity, private val callback: Callback) {
+class Money(context: AppCompatActivity, private val callback: Callback) {
     interface Callback {
         fun onShellsUpdated(shells: Int, silverShells: Int)
+        fun requestRefresh()
     }
 
     private class Data {
@@ -26,47 +28,45 @@ class Shells(context: AppCompatActivity, private val callback: Callback) {
     var fullIn: Long = 0
         private set
 
-    private val timer = Timer("Shells")
+    private var timer: Timer? = null
     private val data = Data()
 
     private var mainHandler = Handler(Looper.getMainLooper())
-    private var queue = HTTPClient.getInstance(context)
 
     private var regularView = context.findViewById<TextView>(R.id.shells_view_amount)
     private var dropTimerView = context.findViewById<TextView>(R.id.shells_view_drop_timer)
     private var fullView = context.findViewById<TextView>(R.id.shells_view_full_reminder)
 
-    init {
-        timer.scheduleAtFixedRate(object : TimerTask() {
+
+    fun update(json: JSONObject) {
+        val moneys = json.getJSONObject("moneys")
+        val drop = json.getJSONObject("drop")
+        data.lastUpdate = moneys.getLong("lastUpdateShells")
+        data.shells = moneys.getInt("shells")
+        data.silverShells = moneys.getInt("silverShells")
+
+        data.ceiling = drop.getInt("ceiling")
+        data.seconds = drop.getInt("seconds")
+        data.quantity = drop.getInt("quantity")
+
+        if (timer != null) {
+            timer!!.cancel()
+            timer!!.purge()
+        }
+
+        timer = Timer("shell")
+
+        timer!!.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 refresh()
             }
         }, 250, 250)
+
+        refresh()
+
+        mainHandler.post { callback.onShellsUpdated(data.shells, data.silverShells) }
     }
 
-    fun fetch() {
-        queue.addToRequestQueue(
-            "/user",
-            {
-                val moneys = it.getJSONObject("moneys")
-                val drop = it.getJSONObject("drop")
-                data.lastUpdate = moneys.getLong("lastUpdateShells")
-                data.shells = moneys.getInt("shells")
-                data.silverShells = moneys.getInt("silverShells")
-
-                data.ceiling = drop.getInt("ceiling")
-                data.seconds = drop.getInt("seconds")
-                data.quantity = drop.getInt("quantity")
-
-                refresh()
-
-                mainHandler.post { callback.onShellsUpdated(data.shells, data.silverShells) }
-            },
-            {
-                Log.d("Shells", "Error: $it")
-            }
-        )
-    }
 
     private fun refresh() {
         val now = System.currentTimeMillis()
@@ -75,10 +75,9 @@ class Shells(context: AppCompatActivity, private val callback: Callback) {
             (((data.ceiling - data.shells) / data.quantity) * data.seconds * 1000) - (now - data.lastUpdate)
 
         if (nextDrop <= 0) {
-            fetch()
+            callback.requestRefresh()
         }
         mainHandler.post {
-
             regularView.text = "${data.shells}/${data.ceiling}"
             dropTimerView.text = DateUtils.formatElapsedTime(nextDrop / 1000)
             fullView.text = DateUtils.formatElapsedTime(fullIn / 1000)

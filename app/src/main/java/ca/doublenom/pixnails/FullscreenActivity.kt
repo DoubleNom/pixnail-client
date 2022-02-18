@@ -19,11 +19,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
  * status bar and navigation/system bar) with user interaction.
  */
 class FullscreenActivity : AppCompatActivity() {
+    private val twitchLoginUrl = "https://www.twitch.tv/login"
+
     private lateinit var sChannels: Spinner
     private lateinit var webview: WebView
     private lateinit var client: ViewGroup
     private lateinit var httpClient: HTTPClient
-    private lateinit var shells: Shells
+    private lateinit var user: User
     private lateinit var promo: Promo
     private lateinit var boosters: Boosters
     private lateinit var toolbar: ConstraintLayout
@@ -44,7 +46,7 @@ class FullscreenActivity : AppCompatActivity() {
             if (p1) {
                 webview.visibility = View.GONE
                 client.visibility = View.VISIBLE
-                shells.fetch()
+                user.fetch()
                 promo.refresh()
             } else {
                 webview.visibility = View.VISIBLE
@@ -52,31 +54,37 @@ class FullscreenActivity : AppCompatActivity() {
             }
         }
 
-        shells = Shells(this, shellsCallback)
-        promo = Promo(this)
-        boosters = Boosters(this, boosterCallback)
+        Generations.requestGenerations(this, object : Generations.Callback {
+            override fun onGenerationLoaded() {
+                loadCustomClient()
+            }
+        })
 
         OneTimeScheduleWorker.createNotificationChannel(this)
 
         val swc = ServiceWorkerController.getInstance()
         swc.setServiceWorkerClient(object : ServiceWorkerClient() {
             override fun shouldInterceptRequest(request: WebResourceRequest?): WebResourceResponse? {
-                if (request != null && request.url.path == "/generations") {
+                if (request != null && request.url.path == "/news") {
                     val auth = request.requestHeaders["authorization"]
                     if (auth != null) {
                         httpClient.headers["authorization"] = auth
-                        Handler(Looper.getMainLooper()).post {
-//                            tbClientSwitch.isChecked = true
-                        }
+                        loadCustomClient()
                     }
                 }
                 return super.shouldInterceptRequest(request)
             }
         })
 
-        webview.webViewClient = CustomClient(toolbar)
+        webview.webViewClient = CustomClient {
+            if ((it == "https://www.twitch.tv" || it.contains("?"))) {
+                webview.loadUrl("https://www.twitch.tv/popout/doublenom/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
+                toolbar.visibility = View.VISIBLE
+                loadCustomClient()
+            }
+        }
         webview.settings.javaScriptEnabled = true
-        webview.loadUrl("https://www.twitch.tv/login")
+        webview.loadUrl(twitchLoginUrl)
 
         sChannels.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -97,30 +105,34 @@ class FullscreenActivity : AppCompatActivity() {
         if (webview.url!!.contains("popout")) finish()
     }
 
-    class CustomClient(val toolbar: ConstraintLayout) : WebViewClient() {
+    fun loadCustomClient() {
+        Handler(Looper.getMainLooper()).post {
+            if (webview.url == twitchLoginUrl || !Generations.isLoaded) return@post
+            user = User(this, object : User.Callback {
+                override fun onMoneyUpdated(shells: Int, silverShells: Int) {
+                    boosters.onShellsUpdated(shells, silverShells)
+                }
+            })
+            promo = Promo(this)
+            boosters = Boosters(this, object : Boosters.Callback {
+                override fun onPurchase() {
+                    user.fetch()
+                }
+
+                override fun onDraw(cards: Array<Card>) {
+                    val new = user.findNewCards(cards)
+                    val draw = DraftDialog(new, cards)
+                    draw.show(supportFragmentManager, "draft")
+                }
+            })
+            tbClientSwitch.isChecked = true
+        }
+    }
+
+    class CustomClient(private val callback: (String) -> Unit) : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            Log.d("WVC", "url: $url")
-            if (url != null && (url == "https://www.twitch.tv" || url.contains("?"))) {
-                view?.loadUrl("https://www.twitch.tv/popout/doublenom/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
-                toolbar.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private val shellsCallback = object : Shells.Callback {
-        override fun onShellsUpdated(shells: Int, silverShells: Int) {
-            boosters.onShellsUpdated(shells, silverShells)
-            OneTimeScheduleWorker.scheduleOneTimeNotification(
-                this@FullscreenActivity,
-                this@FullscreenActivity.shells.fullIn
-            )
-        }
-    }
-
-    private val boosterCallback = object : Boosters.Callback {
-        override fun onPurchase() {
-            shells.fetch()
+            if (url != null) callback(url)
         }
     }
 }

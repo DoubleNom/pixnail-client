@@ -2,10 +2,8 @@ package ca.doublenom.pixnails
 
 import android.content.Context
 import com.android.volley.*
-import com.android.volley.toolbox.HttpHeaderParser
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import com.android.volley.toolbox.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Exception
 import java.lang.NullPointerException
@@ -31,18 +29,47 @@ class HTTPClient constructor(context: Context) {
         Volley.newRequestQueue(context.applicationContext)
     }
 
-    fun addToRequestQueue(endpoint: String, onSuccess: Response.Listener<JSONObject>, onError: Response.ErrorListener) {
-        if(headers.isEmpty()) return
-        val authorization = headers["authorization"]!!
+    fun addToRequestQueueArray(
+        endpoint: String,
+        onSuccess: Response.Listener<JSONArray>,
+        onError: Response.ErrorListener,
+        token: Boolean = true
+    ) {
+        if (headers.isEmpty() && token) return
+        val authorization = if(token) headers["authorization"] else null
 
-        val request = object: JsonObjectRequest(
+        val request = object : JsonArrayRequest(
             url + endpoint,
             onSuccess,
             onError
         ) {
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers["Authorization"] = authorization
+                if (token) headers["Authorization"] = authorization!!
+                return headers
+            }
+        }
+
+        requestQueue.add(request)
+    }
+
+    fun addToRequestQueueObject(
+        endpoint: String,
+        onSuccess: Response.Listener<JSONObject>,
+        onError: Response.ErrorListener,
+        token: Boolean = true
+    ) {
+        if (headers.isEmpty() && token) return
+        val authorization = if(token) headers["authorization"] else null
+
+        val request = object : JsonObjectRequest(
+            url + endpoint,
+            onSuccess,
+            onError
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                if (token) headers["Authorization"] = authorization!!
                 return headers
             }
         }

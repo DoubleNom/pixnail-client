@@ -2,6 +2,7 @@ package ca.doublenom.pixnails
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.json.JSONArray
+import java.lang.Integer.MAX_VALUE
+import java.lang.Integer.min
 
-class Boosters(context: AppCompatActivity, private val callback: Callback) {
+class Boosters(
+    context: AppCompatActivity, private val callback: Callback
+) {
     private val dataSet = ArrayList<BoosterItem>(3)
 
     data class BoosterItem(
@@ -26,8 +32,13 @@ class Boosters(context: AppCompatActivity, private val callback: Callback) {
         private val context: Context,
         private val dataSet: ArrayList<BoosterItem>,
         var shells: Int = 0,
-        var silverShells: Int = 0
+        var silverShells: Int = 0,
+        private val callback: Callback
     ) : RecyclerView.Adapter<BoosterAdapter.ViewHolder>() {
+        interface Callback {
+            fun onClick(quantity: Int, set: String, rank: String)
+        }
+
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val price: TextView = view.findViewById(R.id.booster_item_price)
             val title: TextView = view.findViewById(R.id.booster_item_title)
@@ -60,9 +71,40 @@ class Boosters(context: AppCompatActivity, private val callback: Callback) {
             if (item.priceSilverShells != 0) text += "SS: ${item.priceShells}"
             holder.price.text = text
 
-            holder.bX1.visibility = if(hasEnoughMoney(shells, silverShells, item.priceShells, item.priceSilverShells, 1)) View.VISIBLE else View.GONE
-            holder.bX10.visibility = if(hasEnoughMoney(shells, silverShells, item.priceShells, item.priceSilverShells, 10)) View.VISIBLE else View.GONE
+            holder.bX1.visibility = if (hasEnoughMoney(
+                    shells,
+                    silverShells,
+                    item.priceShells,
+                    item.priceSilverShells,
+                    1
+                )
+            ) View.VISIBLE else View.GONE
+            holder.bX10.visibility = if (hasEnoughMoney(
+                    shells,
+                    silverShells,
+                    item.priceShells,
+                    item.priceSilverShells,
+                    10
+                )
+            ) View.VISIBLE else View.GONE
             holder.bMax.visibility = holder.bX1.visibility
+
+            holder.bX1.setOnClickListener {
+                callback.onClick(1, item.set, item.rank)
+            }
+            holder.bX10.setOnClickListener {
+                callback.onClick(10, item.set, item.rank)
+            }
+            holder.bMax.setOnClickListener {
+                callback.onClick(
+                    getMax(
+                        shells,
+                        silverShells,
+                        item.priceShells,
+                        item.priceSilverShells
+                    ), item.set, item.rank
+                )
+            }
         }
 
 
@@ -78,16 +120,53 @@ class Boosters(context: AppCompatActivity, private val callback: Callback) {
             return true
         }
 
+        private fun getMax(
+            shells: Int,
+            silverShells: Int,
+            priceShells: Int,
+            priceSilverShells: Int
+        ): Int {
+            val qs = if (priceShells != 0) shells / priceShells else MAX_VALUE
+            val qss = if (priceSilverShells != 0) silverShells / priceSilverShells else MAX_VALUE
+            return min(qs, qss)
+        }
+
         override fun getItemCount(): Int {
             return dataSet.size
         }
     }
 
-    val adapter = BoosterAdapter(context, dataSet)
+    private val adapter = BoosterAdapter(context, dataSet, 0, 0, object : BoosterAdapter.Callback {
+        override fun onClick(quantity: Int, set: String, rank: String) {
+            queue.addToRequestQueueArray("/generations/$set/boosters/$rank?quantity=$quantity",
+                {
+                    Log.d("Booster", it.toString())
+                    val array: JSONArray = it.getJSONArray(0)
+                    val cards: HashSet<Card> = HashSet()
+                    for (i in 0 until array.length()) {
+                        val obj = array.getJSONObject(i)
+                        val q = obj.getJSONObject("quantities")
+                        val puddyness =
+                            when {
+                                q.getInt(Puddyness.Normal.toUselessCorpRetardness()) != 0 -> Puddyness.Normal
+                                q.getInt(Puddyness.Super.toUselessCorpRetardness()) != 0 -> Puddyness.Super
+                                q.getInt(Puddyness.Giga.toUselessCorpRetardness(false)) != 0 -> Puddyness.Giga
+                                else -> Puddyness.None
+                            }
+                        cards.add(Card(obj, puddyness))
+                    }
+                    callback.onDraw(cards.toTypedArray())
+                },
+                {
+                    Log.e("Boosters", it.toString())
+                }
+            )
+        }
+    })
 
     val queue = HTTPClient.getInstance(context)
 
-    val recyclerView = context.findViewById<RecyclerView>(R.id.boosters_layout_list)
+    private val recyclerView: RecyclerView = context.findViewById(R.id.boosters_layout_list)
 
     init {
         recyclerView.adapter = adapter
@@ -107,6 +186,7 @@ class Boosters(context: AppCompatActivity, private val callback: Callback) {
 
     interface Callback {
         fun onPurchase()
+        fun onDraw(cards: Array<Card>)
     }
 
 }

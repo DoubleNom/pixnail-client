@@ -5,6 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 
 class User(context: AppCompatActivity, private val callback: Callback) {
 
+    enum class Fetch {
+        Money,
+        Cards,
+        All
+    }
+
     private val queue = HTTPClient.getInstance(context)
 
     private val cards = Cards()
@@ -18,26 +24,32 @@ class User(context: AppCompatActivity, private val callback: Callback) {
         }
     })
 
-    fun fetch() {
-        queue.addToRequestQueueObject(
-            "/user",
-            {
-                money.update(it)
-            },
-            {
-                Log.e("User", it.toString())
-            }
-        )
 
-        queue.addToRequestQueueArray(
-            "/user/cards",
-            {
-                cards.update(it)
-            },
-            {
-                Log.e("User", it.toString())
-            }
-        )
+
+    fun fetch(fetch: Fetch = Fetch.All) {
+        if(fetch == Fetch.Money || fetch == Fetch.All) {
+            queue.addToRequestQueueObject(
+                "/user",
+                {
+                    money.update(it)
+                },
+                {
+                    Log.e("User", it.toString())
+                }
+            )
+        }
+
+        if(fetch == Fetch.Cards || fetch == Fetch.All) {
+            queue.addToRequestQueueArray(
+                "/user/cards",
+                {
+                    cards.update(it)
+                },
+                {
+                    Log.e("User", it.toString())
+                }
+            )
+        }
     }
 
     fun findNewCards(cards: Array<Card>) : Array<Card> {

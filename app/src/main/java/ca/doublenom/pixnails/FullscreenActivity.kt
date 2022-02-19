@@ -118,10 +118,11 @@ class FullscreenActivity : AppCompatActivity() {
             promo = Promo(this)
             boosters = Boosters(this, object : Boosters.Callback {
                 override fun onPurchase() {
-                    user.fetch()
+//                    user.fetch()
                 }
 
                 override fun onDraw(cards: Array<Card>) {
+                    user.fetch()
                     val new = user.findNewCards(cards)
                     val draw = DraftDialog(new, cards)
                     draw.show(supportFragmentManager, "draft")

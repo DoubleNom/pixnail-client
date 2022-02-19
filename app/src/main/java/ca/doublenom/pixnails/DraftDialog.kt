@@ -15,7 +15,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import java.io.InputStream
 
-class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Card>) : DialogFragment() {
+class DraftDialog(
+    private val newCards: Array<Card>,
+    private val draw: Array<Card>
+) : DialogFragment() {
     class DraftAdapter(
         private val context: Context,
         private val dataSet: Array<Card>
@@ -80,7 +83,7 @@ class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Car
             val rwNewCards = view.findViewById<RecyclerView>(R.id.draft_modal_new_cards_list)
             rwNewCards.adapter = aNewCards
 
-            if(this.newCards.isEmpty()) {
+            if (this.newCards.isEmpty()) {
                 rwNewCards.visibility = View.GONE
                 noNewCards.visibility = View.VISIBLE
             } else {
@@ -92,10 +95,7 @@ class DraftDialog(private val newCards: Array<Card>, private val draw: Array<Car
             val rwDraw = view.findViewById<RecyclerView>(R.id.draft_modal_list)
             rwDraw.adapter = aDraw
 
-            builder.setView(view)
-            builder.create()
+            builder.setView(view).create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
-
-
 }

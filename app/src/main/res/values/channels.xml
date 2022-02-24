@@ -6,4 +6,10 @@
         <item>Mizuki_Okami</item>
         <item>BritanouilleTV</item>
     </string-array>
+    <integer-array name="channels_type">
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>1</item>
+    </integer-array>
 </resources>

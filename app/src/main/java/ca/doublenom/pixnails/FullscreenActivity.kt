@@ -1,6 +1,7 @@
 package ca.doublenom.pixnails
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
@@ -14,6 +15,7 @@ import android.widget.Spinner
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.edit
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -77,10 +79,15 @@ class FullscreenActivity : AppCompatActivity() {
                 return super.shouldInterceptRequest(request)
             }
         })
+        val newUA = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0"
+        webview.settings.userAgentString = newUA
 
         webview.webViewClient = CustomClient {
-            if ((it == "https://www.twitch.tv" || it.contains("?"))) {
-                webview.loadUrl("https://www.twitch.tv/popout/doublenom/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
+            if ((it == "https://www.twitch.tv" || it.contains("https://www.twitch.tv/?"))) {
+                val sp = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
+                val channel = sp.getInt(getString(R.string.last_channel), 0)
+                Log.d("Channel", "$channel")
+                sChannels.setSelection(channel)
                 toolbar.visibility = View.VISIBLE
                 loadCustomClient()
             }
@@ -90,10 +97,7 @@ class FullscreenActivity : AppCompatActivity() {
 
         sChannels.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                val channel = resources.getStringArray(R.array.channels_name)[p2].lowercase()
-                Log.d("Channel", channel)
-                tbClientSwitch.isChecked = false
-                webview.loadUrl("https://www.twitch.tv/popout/$channel/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz-0.0.1/panel")
+                loadChannel(p2)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -105,6 +109,21 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         if (webview.url!!.contains("popout")) finish()
+    }
+
+    fun loadChannel(num: Int) {
+        getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE).edit {
+            this.putInt(getString(R.string.last_channel), num)
+        }
+        val channel = resources.getStringArray(R.array.channels_name)[num].lowercase()
+        val type = resources.getIntArray(R.array.channels_type)[num]
+        Log.d("Channel", channel)
+        tbClientSwitch.isChecked = false
+        if(type == 0) {
+            webview.loadUrl("https://www.twitch.tv/popout/$channel/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz/panel")
+        } else {
+            webview.loadUrl("https://www.twitch.tv/$channel")
+        }
     }
 
     fun loadCustomClient() {

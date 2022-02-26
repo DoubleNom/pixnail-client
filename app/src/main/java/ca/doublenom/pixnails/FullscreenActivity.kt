@@ -79,6 +79,8 @@ class FullscreenActivity : AppCompatActivity() {
                 return super.shouldInterceptRequest(request)
             }
         })
+        // We need to change user agent to load desktop website in order to load
+        // overlay extensions
         val newUA = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0"
         webview.settings.userAgentString = newUA
 

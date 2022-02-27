@@ -13,7 +13,7 @@ class User(context: AppCompatActivity, private val callback: Callback) {
 
     private val queue = HTTPClient.getInstance(context)
 
-    private val cards = Cards()
+    private val cards = Cards(context)
     private val money = Money(context, object : Money.Callback {
         override fun onShellsUpdated(shells: Int, silverShells: Int) {
             callback.onMoneyUpdated(shells, silverShells)

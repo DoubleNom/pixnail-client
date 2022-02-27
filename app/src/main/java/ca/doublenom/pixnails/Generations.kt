@@ -13,6 +13,16 @@ object Generations {
         fun onGenerationLoaded()
     }
 
+    fun getGenerationsName() : Array<String> {
+        return generations.keys.toTypedArray()
+    }
+
+    fun getGenerationSize(set: String): Int {
+        return if (generations.containsKey(set)) {
+            generations[set]!!.size
+        } else 0
+    }
+
     fun requestGenerations(context: Context, callback: Callback) {
         isLoaded = false
         HTTPClient.getInstance(context).addToRequestQueueArray(

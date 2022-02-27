@@ -1,7 +1,6 @@
 package ca.doublenom.pixnails
 
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler

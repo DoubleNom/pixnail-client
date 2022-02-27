@@ -77,11 +77,9 @@ class Cards(context: AppCompatActivity) {
         // Initialize set if needed
         for (set in Generations.getGenerationsName()) {
             val setSize = Generations.getGenerationSize(set)
-            if (!completion.containsKey(set) || completion[set]!!.size != setSize) {
-                completion[set] = Array(setSize) {
-                    Array(3) {
-                        false
-                    }
+            completion[set] = Array(setSize) {
+                Array(3) {
+                    false
                 }
             }
         }
@@ -114,7 +112,7 @@ class Cards(context: AppCompatActivity) {
     fun findNewCards(draw: Array<Card>): Array<Card> {
         val newCards = ArrayList<Card>()
         for (card in draw) {
-            if (cards[card] == 0) newCards.add(card)
+            if (cards[card] == null || cards[card] == 0) newCards.add(card)
         }
         return newCards.toTypedArray()
     }

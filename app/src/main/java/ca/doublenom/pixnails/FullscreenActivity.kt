@@ -15,6 +15,7 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -39,6 +40,21 @@ class FullscreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         httpClient = HTTPClient.getInstance(applicationContext)
+
+        val fb = findViewById<FloatingActionButton>(R.id.debug_button)
+        fb.setOnClickListener {
+            val cards = ArrayList<Card>(200)
+            for(set in Generations.getGenerationsName()) {
+                for(i in 0 until Generations.getGenerationSize(set)) {
+                    cards.add(Card(set, i, Puddyness.Normal))
+                    cards.add(Card(set, i, Puddyness.Super))
+                    cards.add(Card(set, i, Puddyness.Giga))
+                }
+            }
+            val new = user.findNewCards(cards.toTypedArray())
+            val draw = DraftDialog(new, cards.toTypedArray())
+            draw.show(supportFragmentManager, "draft")
+        }
 
         toolbar = findViewById(R.id.toolbar)
         sChannels = findViewById(R.id.spinner)

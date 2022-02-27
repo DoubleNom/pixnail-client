@@ -2,7 +2,7 @@ package ca.doublenom.pixnails
 
 import org.json.JSONObject
 
-class Card {
+class Card : Comparable<Card> {
     var set: String = ""
     var number: Int = 0
     var rarity: Rarity = Rarity.D
@@ -19,6 +19,15 @@ class Card {
         this.set = set
         this.number = number
         this.puddyness = puddyness
+        rarity = Generations.getCardRarity(set, number)
+    }
+
+    override fun compareTo(other: Card): Int {
+        val sPuddy = other.puddyness.ordinal - this.puddyness.ordinal
+        val sRarity = this.rarity.ordinal - other.rarity.ordinal
+        val sNumber = other.number - this.number
+
+        return sPuddy * 10000 + sRarity * 100 + sNumber
     }
 
     override fun hashCode(): Int {

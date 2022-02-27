@@ -19,6 +19,12 @@ class DraftDialog(
     private val newCards: Array<Card>,
     private val draw: Array<Card>
 ) : DialogFragment() {
+
+    init {
+        newCards.sort()
+        draw.sort()
+    }
+
     class DraftAdapter(
         private val context: Context,
         private val dataSet: Array<Card>

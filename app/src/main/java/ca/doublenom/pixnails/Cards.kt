@@ -99,7 +99,6 @@ class Cards(context: AppCompatActivity) {
             completion[card.set]!![card.number][Puddyness.Super.ordinal] = qs != 0
             completion[card.set]!![card.number][Puddyness.Giga.ordinal] = qg != 0
         }
-
         val c = getCompletionRates()
         val list = ArrayList<CompletionItem>(c.size)
         for (entry in c.entries) {
@@ -117,7 +116,7 @@ class Cards(context: AppCompatActivity) {
         return newCards.toTypedArray()
     }
 
-    fun getCompletionRates(): HashMap<String, Array<Float>> {
+    private fun getCompletionRates(): HashMap<String, Array<Float>> {
         val rates = HashMap<String, Array<Float>>()
         for (set in Generations.getGenerationsName()) {
             val size = Generations.getGenerationSize(set)

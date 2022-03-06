@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
@@ -33,10 +34,13 @@ class FullscreenActivity : AppCompatActivity() {
     private lateinit var promo: Promo
     private lateinit var boosters: Boosters
     private lateinit var toolbar: ConstraintLayout
+    private lateinit var refresh: ImageButton
 
     private lateinit var tbClientSwitch: ToggleButton
 
     private var tokenExpiration: Long? = null
+
+    private var keepOriginal = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +66,7 @@ class FullscreenActivity : AppCompatActivity() {
             draw.show(supportFragmentManager, "draft")
         }
 
+        refresh = findViewById(R.id.refresh)
         toolbar = findViewById(R.id.toolbar)
         sChannels = findViewById(R.id.spinner)
         webview = findViewById(R.id.webview)
@@ -77,6 +82,13 @@ class FullscreenActivity : AppCompatActivity() {
                 webview.visibility = View.VISIBLE
                 client.visibility = View.GONE
             }
+        }
+        refresh.setOnClickListener {
+            keepOriginal = !tbClientSwitch.isChecked
+            tbClientSwitch.isChecked = false
+            Handler(Looper.getMainLooper()).postDelayed({
+                webview.reload()
+            }, 100)
         }
 
         Generations.requestGenerations(this, object : Generations.Callback {
@@ -174,7 +186,8 @@ class FullscreenActivity : AppCompatActivity() {
                     draw.show(supportFragmentManager, "draft")
                 }
             })
-            tbClientSwitch.isChecked = true
+            if(!keepOriginal) tbClientSwitch.isChecked = true
+            keepOriginal = false
         }
     }
 

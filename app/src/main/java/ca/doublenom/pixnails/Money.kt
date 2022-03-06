@@ -39,21 +39,24 @@ class Money(context: AppCompatActivity, private val callback: Callback) {
     private var fullView = context.findViewById<TextView>(R.id.shells_view_full_reminder)
 
     fun update(json: JSONObject) {
-        val moneys = json.getJSONObject("moneys")
-        val drop = json.getJSONObject("drop")
-        data.lastUpdate = moneys.getLong("lastUpdateShells")
-        data.shells = moneys.getInt("shells")
-        data.silverShells = moneys.getInt("silverShells")
-
-        data.ceiling = drop.getInt("ceiling")
-        data.seconds = drop.getInt("seconds")
-        data.quantity = drop.getInt("quantity")
-
-        isInit = true
-
         refreshHandler.removeCallbacksAndMessages(null)
-        refreshHandler.post{refresh()}
-        mainHandler.post { callback.onShellsUpdated(data.shells, data.silverShells) }
+        mainHandler.post{
+            val moneys = json.getJSONObject("moneys")
+            val drop = json.getJSONObject("drop")
+            data.lastUpdate = moneys.getLong("lastUpdateShells")
+            data.shells = moneys.getInt("shells")
+            data.silverShells = moneys.getInt("silverShells")
+
+            data.ceiling = drop.getInt("ceiling")
+            data.seconds = drop.getInt("seconds")
+            data.quantity = drop.getInt("quantity")
+
+            isInit = true
+
+            refreshHandler.removeCallbacksAndMessages(null)
+            refreshHandler.post{refresh()}
+            mainHandler.post { callback.onShellsUpdated(data.shells, data.silverShells) }
+        }
     }
 
 

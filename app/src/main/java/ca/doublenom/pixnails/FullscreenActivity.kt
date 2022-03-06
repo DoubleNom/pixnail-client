@@ -15,6 +15,7 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
+import com.auth0.android.jwt.JWT
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -35,10 +36,15 @@ class FullscreenActivity : AppCompatActivity() {
 
     private lateinit var tbClientSwitch: ToggleButton
 
+    private var tokenExpiration: Long? = null
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+    }
+
+    private fun loadApp() {
         httpClient = HTTPClient.getInstance(applicationContext)
 
         val fb = findViewById<FloatingActionButton>(R.id.debug_button)
@@ -88,6 +94,8 @@ class FullscreenActivity : AppCompatActivity() {
                     val auth = request.requestHeaders["authorization"]
                     if (auth != null) {
                         httpClient.headers["authorization"] = auth
+                        val jwt = JWT(auth.split(" ")[1])
+                        tokenExpiration = jwt.expiresAt!!.time
                         loadCustomClient()
                     }
                 }
@@ -123,9 +131,11 @@ class FullscreenActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (webview.url!!.contains("popout")) finish()
+    override fun onResume() {
+        super.onResume()
+        if(tokenExpiration == null || System.currentTimeMillis() >= tokenExpiration!!) {
+            loadApp()
+        }
     }
 
     fun loadChannel(num: Int) {

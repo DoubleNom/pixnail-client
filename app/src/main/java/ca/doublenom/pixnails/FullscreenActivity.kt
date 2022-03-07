@@ -46,11 +46,31 @@ class FullscreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
+
+        httpClient = HTTPClient.getInstance(applicationContext)
+
+        user = User(this, object : User.Callback {
+            override fun onMoneyUpdated(shells: Int, silverShells: Int) {
+                boosters.onShellsUpdated(shells, silverShells)
+            }
+        })
+        promo = Promo(this)
+        boosters = Boosters(this, object : Boosters.Callback {
+            override fun onPurchase() {
+//                    user.fetch()
+            }
+
+            override fun onDraw(cards: Array<Card>) {
+                user.fetch()
+                val new = user.findNewCards(cards)
+                val draw = DraftDialog(new, cards)
+                draw.show(supportFragmentManager, "draft")
+            }
+        })
+
     }
 
     private fun loadApp() {
-        httpClient = HTTPClient.getInstance(applicationContext)
-
         val fb = findViewById<FloatingActionButton>(R.id.debug_button)
         fb.setOnClickListener {
             val cards = ArrayList<Card>(200)
@@ -168,24 +188,6 @@ class FullscreenActivity : AppCompatActivity() {
     fun loadCustomClient() {
         Handler(Looper.getMainLooper()).post {
             if (webview.url == twitchLoginUrl || !Generations.isLoaded) return@post
-            user = User(this, object : User.Callback {
-                override fun onMoneyUpdated(shells: Int, silverShells: Int) {
-                    boosters.onShellsUpdated(shells, silverShells)
-                }
-            })
-            promo = Promo(this)
-            boosters = Boosters(this, object : Boosters.Callback {
-                override fun onPurchase() {
-//                    user.fetch()
-                }
-
-                override fun onDraw(cards: Array<Card>) {
-                    user.fetch()
-                    val new = user.findNewCards(cards)
-                    val draw = DraftDialog(new, cards)
-                    draw.show(supportFragmentManager, "draft")
-                }
-            })
             if(!keepOriginal) tbClientSwitch.isChecked = true
             keepOriginal = false
         }

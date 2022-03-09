@@ -70,6 +70,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun loadApp() {
         val fb = findViewById<FloatingActionButton>(R.id.debug_button)
         fb.setOnClickListener {
@@ -150,7 +151,7 @@ class FullscreenActivity : AppCompatActivity() {
             }
         }
         webview.settings.javaScriptEnabled = true
-        webview.loadUrl(twitchLoginUrl)
+        if(webview.url != twitchLoginUrl) webview.loadUrl(twitchLoginUrl)
 
         sChannels.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -165,7 +166,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if(tokenExpiration == null || System.currentTimeMillis() >= tokenExpiration!!) {
+        if((tokenExpiration == null || System.currentTimeMillis() >= tokenExpiration!!)){
             loadApp()
         }
     }

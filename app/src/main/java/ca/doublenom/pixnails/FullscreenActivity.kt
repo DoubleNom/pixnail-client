@@ -75,8 +75,8 @@ class FullscreenActivity : AppCompatActivity() {
         val fb = findViewById<FloatingActionButton>(R.id.debug_button)
         fb.setOnClickListener {
             val cards = ArrayList<Card>(200)
-            for(set in Generations.getGenerationsName()) {
-                for(i in 0 until Generations.getGenerationSize(set)) {
+            for (set in Generations.getGenerationsName()) {
+                for (i in 0 until Generations.getGenerationSize(set)) {
                     cards.add(Card(set, i, Puddyness.Normal))
                     cards.add(Card(set, i, Puddyness.Super))
                     cards.add(Card(set, i, Puddyness.Giga))
@@ -87,6 +87,8 @@ class FullscreenActivity : AppCompatActivity() {
             draw.show(supportFragmentManager, "draft")
         }
 
+        tokenExpiration = null
+        keepOriginal = false
         refresh = findViewById(R.id.refresh)
         toolbar = findViewById(R.id.toolbar)
         sChannels = findViewById(R.id.spinner)
@@ -141,7 +143,10 @@ class FullscreenActivity : AppCompatActivity() {
         webview.settings.userAgentString = newUA
 
         webview.webViewClient = CustomClient {
-            if ((it == "https://www.twitch.tv" || it.contains("https://www.twitch.tv/?"))) {
+            if ((it == "https://www.twitch.tv" ||
+                        it == "https://twitch.tv/" ||
+                        it.startsWith("https://www.twitch.tv/?"))
+            ) {
                 val sp = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE)
                 val channel = sp.getInt(getString(R.string.last_channel), 0)
                 Log.d("Channel", "$channel")
@@ -151,7 +156,7 @@ class FullscreenActivity : AppCompatActivity() {
             }
         }
         webview.settings.javaScriptEnabled = true
-        if(webview.url != twitchLoginUrl) webview.loadUrl(twitchLoginUrl)
+        if (webview.url != twitchLoginUrl) webview.loadUrl(twitchLoginUrl)
 
         sChannels.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -166,7 +171,7 @@ class FullscreenActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if((tokenExpiration == null || System.currentTimeMillis() >= tokenExpiration!!)){
+        if ((tokenExpiration == null || System.currentTimeMillis() >= tokenExpiration!!)) {
             loadApp()
         }
     }
@@ -179,7 +184,7 @@ class FullscreenActivity : AppCompatActivity() {
         val type = resources.getIntArray(R.array.channels_type)[num]
         Log.d("Channel", channel)
         tbClientSwitch.isChecked = false
-        if(type == 0) {
+        if (type == 0) {
             webview.loadUrl("https://www.twitch.tv/popout/$channel/extensions/39l3u7h2njvvw0vijwldod0ks8wzpz/panel")
         } else {
             webview.loadUrl("https://www.twitch.tv/$channel")
@@ -189,7 +194,7 @@ class FullscreenActivity : AppCompatActivity() {
     fun loadCustomClient() {
         Handler(Looper.getMainLooper()).post {
             if (webview.url == twitchLoginUrl || !Generations.isLoaded) return@post
-            if(!keepOriginal) tbClientSwitch.isChecked = true
+            if (!keepOriginal) tbClientSwitch.isChecked = true
             keepOriginal = false
         }
     }

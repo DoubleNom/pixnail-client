@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,10 +36,18 @@ class Promo(context: AppCompatActivity) {
         @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val number = dataSet[position].number
-            val ims : InputStream = context.assets.open("pixnails/cards/promo/regular/cards_ressources_generations_promo_snails_normal_$number.png")
-            val d = Drawable.createFromStream(ims, null)
-            holder.img.setImageDrawable(d)
-            ims.close()
+            try {
+                val ims: InputStream =
+                    context.assets.open("pixnails/cards/promo/regular/cards_ressources_generations_promo_snails_normal_$number.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            } catch (e: Exception) {
+                val ims: InputStream = context.assets.open("pixnails/cards/unknown.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            }
         }
 
         override fun getItemCount(): Int {
@@ -67,7 +74,7 @@ class Promo(context: AppCompatActivity) {
                 val cards = it.getJSONArray("currentPromoDrop")
 
                 dataSet.clear()
-                for(i in 0 until cards.length()){
+                for (i in 0 until cards.length()) {
                     val obj = cards.getJSONObject(i)
                     dataSet.add(PromoItem(obj.getInt("index")))
                 }

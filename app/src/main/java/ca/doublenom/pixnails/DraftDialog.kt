@@ -46,29 +46,44 @@ class DraftDialog(
         @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = dataSet[position]
-            val imgPath = if (item.puddyness != Puddyness.Giga)
-                "pixnails/cards/${item.set}/regular/cards_ressources_generations_${item.set}_snails_normal_${item.number}.png"
-            else
-                "pixnails/cards/${item.set}/shiny/cards_ressources_generations_${item.set}_snails_super_shiny_${item.number}.png"
-            var ims: InputStream = context.assets.open(imgPath)
-            var d = Drawable.createFromStream(ims, null)
-            holder.img.setImageDrawable(d)
-            ims.close()
+            try {
+                val imgPath = if (item.puddyness != Puddyness.Giga)
+                    "pixnails/cards/${item.set}/regular/cards_ressources_generations_${item.set}_snails_normal_${item.number}.png"
+                else
+                    "pixnails/cards/${item.set}/shiny/cards_ressources_generations_${item.set}_snails_super_shiny_${item.number}.png"
+                val ims: InputStream = context.assets.open(imgPath)
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            } catch (e: Exception) {
+                val ims: InputStream = context.assets.open("pixnails/cards/unknown.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            }
 
-            ims =
-                context.assets.open("pixnails/icons/generations/cards_ressources_generations_${item.set}_icon.png")
-            d = Drawable.createFromStream(ims, null)
-            holder.set.setImageDrawable(d)
-            ims.close()
+            try {
+                val ims =
+                    context.assets.open("pixnails/icons/generations/cards_ressources_generations_${item.set}_icon.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.set.setImageDrawable(d)
+                ims.close()
+            } catch (_: Exception) {
 
-            ims = context.assets.open(
-                "pixnails/icons/rarity/cards_ressources_template_rarity_${
-                    item.rarity.toString().lowercase()
-                }_${item.puddyness.toUselessCorpRetardness()}.png"
-            )
-            d = Drawable.createFromStream(ims, null)
-            holder.rarity.setImageDrawable(d)
-            ims.close()
+            }
+
+            try {
+                val ims = context.assets.open(
+                    "pixnails/icons/rarity/cards_ressources_template_rarity_${
+                        item.rarity.toString().lowercase()
+                    }_${item.puddyness.toUselessCorpRetardness()}.png"
+                )
+                val d = Drawable.createFromStream(ims, null)
+                holder.rarity.setImageDrawable(d)
+                ims.close()
+            } catch (_: Exception) {
+
+            }
 
             holder.text.text = "${item.number}"
         }

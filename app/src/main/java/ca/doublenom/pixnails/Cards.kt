@@ -45,11 +45,18 @@ class Cards(context: AppCompatActivity) {
         @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val set = dataSet[position].set
-            val ims: InputStream =
-                context.assets.open("pixnails/icons/generations/cards_ressources_generations_${set}_icon.png")
-            val d = Drawable.createFromStream(ims, null)
-            holder.img.setImageDrawable(d)
-            ims.close()
+            try {
+                val ims: InputStream =
+                    context.assets.open("pixnails/icons/generations/cards_ressources_generations_${set}_icon.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            } catch (e: Exception) {
+                val ims: InputStream = context.assets.open("pixnails/cards/unknown.png")
+                val d = Drawable.createFromStream(ims, null)
+                holder.img.setImageDrawable(d)
+                ims.close()
+            }
 
             holder.title.text = set
             holder.nv.text =

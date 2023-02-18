@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import com.auth0.android.jwt.JWT
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlin.system.exitProcess
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -67,7 +68,10 @@ class FullscreenActivity : AppCompatActivity() {
                 draw.show(supportFragmentManager, "draft")
             }
         })
+    }
 
+    override fun onBackPressed() {
+        exitProcess(0)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
